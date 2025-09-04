@@ -3,8 +3,7 @@ import asyncio
 import os
 import re
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import 
-    Application, CommandHandler, MessageHandler, CallbackQueryHandler,
+from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler,
     filters, ContextTypes
 
 from telegram.constants import ChatType
