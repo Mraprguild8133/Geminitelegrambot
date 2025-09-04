@@ -1,47 +1,30 @@
-
-# Use Python 3.11 slim image
 FROM python:3.11-slim
 
-# Install system dependencies required by opencv, tesseract, and python-magic
+# Prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    libmagic1 \
     tesseract-ocr \
     libtesseract-dev \
+    libmagic1 \
+    libmagic-dev \
+    libgl1 \
     ffmpeg \
-    libsm6 \
-    libxext6 \
     && rm -rf /var/lib/apt/lists/*
 
-# Create working directory
+# Create work directory
 WORKDIR /app
 
-# Copy requirements
+# Copy requirements first (better caching)
 COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# System dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libmagic1 \
-    tesseract-ocr \
-    ffmpeg \
-    libsm6 \
-    libxext6 \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-# Copy application code
+# Copy project files
 COPY . .
 
-# Expose Flask port
-EXPOSE 5000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
-
-# Run the application
+# Default command
 CMD ["python", "main.py"]
