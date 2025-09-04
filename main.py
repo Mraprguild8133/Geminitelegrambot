@@ -6,7 +6,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import 
     Application, CommandHandler, MessageHandler, CallbackQueryHandler,
     filters, ContextTypes
-)
+
 from telegram.constants import ChatType
 
 from config import config
@@ -20,7 +20,6 @@ from user_manager import UserManager
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
-)
 logger = logging.getLogger(__name__)
 
 class TelegramBot:
