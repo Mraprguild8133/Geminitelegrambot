@@ -2,33 +2,44 @@
 # Use Python 3.11 slim image
 FROM python:3.11-slim
 
-# Set working directory
-WORKDIR /app
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
+# Install system dependencies required by opencv, tesseract, and python-magic
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libmagic1 \
+    tesseract-ocr \
+    libtesseract-dev \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
-COPY pyproject.toml ./
-RUN pip install --no-cache-dir .
+# Create working directory
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt gunicorn
+
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libmagic1 \
+    tesseract-ocr \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy installed packages from builder
+COPY --from=builder /usr/local /usr/local
 
 # Copy application code
 COPY . .
 
-# Create necessary directories
-RUN mkdir -p templates static logs
-
-# Set permissions
-RUN chmod +x main.py
-
-# Expose port
+# Expose Flask port
 EXPOSE 5000
 
 # Health check
