@@ -33,9 +33,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy installed packages from builder
-COPY --from=builder /usr/local /usr/local
-
 # Copy application code
 COPY . .
 
